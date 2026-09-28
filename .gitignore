@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+
+# Environments & Sensitive Info
+.env
+.venv
+env/
+venv/
+
+# Data outputs & logs
+previews/
+bilibili_subtitles/
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
