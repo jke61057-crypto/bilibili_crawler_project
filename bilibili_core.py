@@ -9,6 +9,7 @@ import json
 import os
 import re
 import time
+from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlparse
 
 import requests
@@ -19,6 +20,21 @@ from urllib3.util.retry import Retry
 BVID_RE = re.compile(r"BV[0-9A-Za-z]{10}")
 API = "https://api.bilibili.com"
 DEFAULT_SESSDATA = ""
+
+
+def _load_env():
+    env_file = Path(__file__).resolve().parent / ".env"
+    if env_file.is_file():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, val = line.partition("=")
+                key, val = key.strip(), val.strip().strip("'\"")
+                if key and key not in os.environ:
+                    os.environ[key] = val
+
+
+_load_env()
 
 
 def parse_video(value):

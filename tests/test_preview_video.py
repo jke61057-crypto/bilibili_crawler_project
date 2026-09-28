@@ -75,6 +75,11 @@ class PreviewVideoTests(unittest.TestCase):
             session = make_session()
         self.assertIsNone(session.cookies.get("SESSDATA", domain=".bilibili.com"))
 
+    def test_env_sessdata_is_used(self):
+        with patch.dict("os.environ", {"BILIBILI_SESSDATA": "env-cookie"}, clear=True):
+            session = make_session()
+        self.assertEqual(session.cookies.get("SESSDATA", domain=".bilibili.com"), "env-cookie")
+
 
 if __name__ == "__main__":
     unittest.main()
