@@ -46,7 +46,6 @@ python preview_up.py previews/up_<MID>_latest3.json
 - `preview_video.py`：单视频命令行入口。
 - `preview_up.py`：UP 批量命令行入口，默认最新三条，`--count` 支持 1–30。
 - `tests/`：不访问网络的核心行为测试。
-- `legacy/`：保留早期实验脚本及小型实验产物，不属于 MVP 流程。
 - `bilibili_subtitles/`、`previews/`：已有数据及输出目录，未迁移或清空。
 
 运行测试：
