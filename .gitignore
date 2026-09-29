@@ -17,6 +17,7 @@ venv/
 previews/
 bilibili_subtitles/
 *.log
+*.index_cache.json
 
 # IDE & OS
 .vscode/

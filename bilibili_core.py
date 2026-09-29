@@ -143,6 +143,7 @@ def fetch_video(session, bvid, part):
         "cid": cid,
         "title": view.get("title", ""),
         "part_title": page.get("part", ""),
+        "up_name": (view.get("owner") or {}).get("name", ""),
         "duration": page.get("duration"),
         "url": f"https://www.bilibili.com/video/{bvid}/?p={part}",
         "subtitle_language": subtitle.get("lan"),

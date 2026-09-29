@@ -40,9 +40,22 @@ python preview_up.py "https://space.bilibili.com/<MID>" --count 3 --retry-failed
 python preview_up.py previews/up_<MID>_latest3.json
 ```
 
+### 生成轻量化内容索引
+
+一键扫描已下载的视频字幕，自动解析并生成包含 **视频标题、BV号、UP主名称、相关标签** 的索引文件：
+
+```powershell
+python build_index.py
+```
+
+执行后将在根目录下生成：
+- `INDEX.md`：直观清晰的 Markdown 索引总览表（带本地字幕可点击链接）。
+- `index.json`：便于程序化检索的结构化 JSON。
+
 ## 代码结构
 
 - `bilibili_core.py`：认证、B 站请求、UP 列表、字幕解析和结果保存。
+- `build_index.py`：轻量化视频索引构建脚本。
 - `preview_video.py`：单视频命令行入口。
 - `preview_up.py`：UP 批量命令行入口，默认最新三条，`--count` 支持 1–30。
 - `tests/`：不访问网络的核心行为测试。
