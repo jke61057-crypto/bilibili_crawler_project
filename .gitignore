@@ -19,6 +19,15 @@ bilibili_subtitles/
 *.log
 *.index_cache.json
 
+# Media files (audio/video strictly untracked)
+*.mp3
+*.m4a
+*.mp4
+*.wav
+*.aac
+*.flac
+*.webm
+
 # IDE & OS
 .vscode/
 .idea/

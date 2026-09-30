@@ -1,6 +1,9 @@
 """Bilibili metadata, subtitle, and UP-list operations for the MVP.
 
-This module never requests video or audio stream URLs.
+CORE INVARIANT / HIGHEST PRIORITY:
+- ALWAYS prioritize reading subtitles directly from Bilibili APIs.
+- NEVER request or download video or audio stream URLs from the internet.
+- NEVER run speech-to-text / Whisper transcription models.
 """
 
 import getpass
@@ -117,13 +120,36 @@ def fetch_video(session, bvid, part):
         raise ValueError(f"该视频只有 {len(pages)} 个分 P，无法读取第 {part} P")
     page = pages[part - 1]
     cid = page["cid"]
-    player = api_data(session, "/x/player/wbi/v2", {"bvid": bvid, "cid": cid})
-    if player.get("need_login_subtitle"):
-        raise RuntimeError("B 站要求登录后获取字幕；请设置 BILIBILI_SESSDATA，或使用 --prompt-sessdata")
-    subtitle = select_subtitle((player.get("subtitle") or {}).get("subtitles") or [])
+    aid = view.get("aid")
+    subtitles = []
+    need_login = False
+    try:
+        player = api_data(session, "/x/player/wbi/v2", {"bvid": bvid, "cid": cid})
+        if player.get("need_login_subtitle"):
+            need_login = True
+        else:
+            subtitles = (player.get("subtitle") or {}).get("subtitles") or []
+    except Exception:
+        pass
+
+    if not subtitles and aid:
+        try:
+            dm_view = get_json(session, API + "/x/v2/dm/view", params={"aid": aid, "oid": cid, "type": 1})
+            subtitles = ((dm_view.get("data") or {}).get("subtitle") or {}).get("subtitles") or []
+        except Exception:
+            pass
+
+    if not subtitles:
+        if need_login:
+            raise RuntimeError("B 站要求登录后获取字幕；请设置 BILIBILI_SESSDATA，或使用 --prompt-sessdata")
+        raise RuntimeError("此分 P 没有可用字幕；未下载音视频，也未进行语音转写")
+
+    subtitle = select_subtitle(subtitles)
     subtitle_url = subtitle["subtitle_url"]
     if subtitle_url.startswith("//"):
         subtitle_url = "https:" + subtitle_url
+    elif subtitle_url.startswith("http://"):
+        subtitle_url = "https://" + subtitle_url[len("http://"):]
     parsed = urlparse(subtitle_url)
     if parsed.scheme != "https" or not parsed.hostname or not parsed.hostname.endswith(".hdslb.com"):
         raise RuntimeError("字幕地址不在预期的 B 站 CDN 域名下，已停止请求")
